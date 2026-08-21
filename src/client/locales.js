@@ -1,0 +1,43 @@
+export const zh = {
+  'section.preset': '预设主题',
+  'preset.default': '原生',
+  'preset.minimal': '极简黑白',
+  'preset.violet': '暗夜紫',
+  'preset.forest': '护眼绿',
+  'preset.amber': '暖棕',
+  'preset.reset': '恢复默认主题',
+  'sidebar.layout': '侧边栏布局',
+  'sidebar.offsetLabel': '距顶部距离',
+  'sidebar.reset': '恢复原生布局',
+  'background.title': '背景图片',
+  'background.upload': '上传背景图',
+  'background.replace': '更换背景图',
+  'background.remove': '移除背景图',
+  'background.processing': '处理中…',
+  'background.maskLabel': '遮罩不透明度',
+  'section.conversation': '会话可读性',
+  'conversation.toggle': '优化表格 / 代码 / 引用',
+  'conversation.desc': '表格加圆角与表头色条、数值单元格自动居中，代码块描边，引用加色条'
+};
+
+export const en = {
+  'section.preset': 'Preset themes',
+  'preset.default': 'Default',
+  'preset.minimal': 'Minimal',
+  'preset.violet': 'Violet Night',
+  'preset.forest': 'Forest',
+  'preset.amber': 'Amber',
+  'preset.reset': 'Reset to default theme',
+  'sidebar.layout': 'Sidebar layout',
+  'sidebar.offsetLabel': 'Distance from top',
+  'sidebar.reset': 'Restore native layout',
+  'background.title': 'Background image',
+  'background.upload': 'Upload background',
+  'background.replace': 'Replace',
+  'background.remove': 'Remove',
+  'background.processing': 'Processing…',
+  'background.maskLabel': 'Mask opacity',
+  'section.conversation': 'Conversation readability',
+  'conversation.toggle': 'Polish tables / code / quotes',
+  'conversation.desc': 'Rounded tables with header color bar, auto-center numeric cells, outline code blocks, color-bar quotes'
+};
