@@ -63,6 +63,7 @@ export function AppearanceSection({ t, scope }) {
   const [busy, setBusy] = useState(false);
 
   const onPick = async (event) => {
+    if (busy) return; // 防重入：压缩中不再响应新选择
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
@@ -107,33 +108,6 @@ export function AppearanceSection({ t, scope }) {
           </button>
         ))}
       </div>
-      {cfg.themePreset && cfg.themePreset !== 'default' && (
-        <button type="button" className="dsh-appearance-action" onClick={() => set('themePreset', 'default')}>
-          {t('preset.reset')}
-        </button>
-      )}
-
-      <h3>{t('sidebar.layout')}</h3>
-      <div className="dsh-appearance-sidebar-offset">
-        <label className="dsh-appearance-sidebar-offset-label" htmlFor="dsh-appearance-sidebar-offset">
-          {t('sidebar.offsetLabel')}
-        </label>
-        <input
-          id="dsh-appearance-sidebar-offset"
-          type="range"
-          min="0"
-          max="200"
-          step="1"
-          value={cfg.sidebarOffset ?? 0}
-          onChange={(event) => set('sidebarOffset', Number(event.target.value))}
-        />
-        <span className="dsh-appearance-sidebar-offset-value">{(cfg.sidebarOffset ?? 0)}px</span>
-      </div>
-      {(cfg.sidebarOffset ?? 0) > 0 && (
-        <button type="button" className="dsh-appearance-action" onClick={() => scope.unset('sidebarOffset')}>
-          {t('sidebar.reset')}
-        </button>
-      )}
 
       <h3>{t('background.title')}</h3>
       <input
@@ -177,7 +151,51 @@ export function AppearanceSection({ t, scope }) {
         </button>
       )}
 
-      <h3>{t('section.conversation')}</h3>
+      <div className="dsh-appearance-divider" />
+      <h3>{t('sidebar.layout')}</h3>
+      <div className="dsh-appearance-sidebar-offset">
+        <label className="dsh-appearance-sidebar-offset-label" htmlFor="dsh-appearance-sidebar-offset">
+          {t('sidebar.offsetLabel')}
+        </label>
+        <input
+          id="dsh-appearance-sidebar-offset"
+          type="range"
+          min="0"
+          max="200"
+          step="1"
+          value={cfg.sidebarOffset ?? 0}
+          onChange={(event) => set('sidebarOffset', Number(event.target.value))}
+        />
+        <span className="dsh-appearance-sidebar-offset-value">{(cfg.sidebarOffset ?? 0)}px</span>
+      </div>
+
+      <label className="dsh-appearance-switch-row">
+        <span>
+          {t('sidebar.folderIconToggle')}
+          <span className="dsh-appearance-switch-desc">{t('sidebar.folderIconDesc')}</span>
+        </span>
+        <input
+          type="checkbox"
+          className="dsh-appearance-switch"
+          checked={cfg.stableProjectFolderIcon !== false}
+          onChange={(event) => set('stableProjectFolderIcon', event.target.checked)}
+        />
+      </label>
+
+      <label className="dsh-appearance-switch-row">
+        <span>
+          {t('sidebar.iconAlignToggle')}
+          <span className="dsh-appearance-switch-desc">{t('sidebar.iconAlignDesc')}</span>
+        </span>
+        <input
+          type="checkbox"
+          className="dsh-appearance-switch"
+          checked={cfg.alignSidebarIcons !== false}
+          onChange={(event) => set('alignSidebarIcons', event.target.checked)}
+        />
+      </label>
+
+      <div className="dsh-appearance-divider" />
       <label className="dsh-appearance-switch-row">
         <span>
           {t('conversation.toggle')}

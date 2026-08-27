@@ -35,8 +35,6 @@ function ensureRaiseStyle() {
     '[class*="tabBar"] { position: relative !important; z-index: 200 !important; }' +
     // sessionLog/导出按钮：始终提到拖动条上层（视觉完整且可点）。
     '[class*="sessionLogButton"] { position: relative !important; z-index: 200 !important; }' +
-    // 设置弹窗：始终在最顶层，避免被抬升容器（z:200）或其它浮层盖住。
-    '[class*="settings"]:not([class*="Button"]):not([class*="button"]):not([class*="icon"]):not([class*="Icon"]):not([class*="trigger"]):not([class*="Trigger"]):not([class*="tab"]):not([class*="Tab"]) { z-index: 9999 !important; }' +
     // shl-session-history 滑轨：高于抬升容器（200）以保持可见，低于弹窗
     // （tooltip 401、modal 1000）以免盖住弹窗。
     '.shlrail_fixed { z-index: 201 !important; }' +

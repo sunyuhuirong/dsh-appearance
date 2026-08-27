@@ -16,7 +16,7 @@ const APPEARANCE_CSS = `
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  margin: 0 0 4px;
+  margin: 12px 0 4px;
 }
 .dsh-appearance-preset-grid {
   display: flex;
@@ -78,6 +78,11 @@ const APPEARANCE_CSS = `
 .dsh-appearance-action:hover {
   background: var(--dsw-alias-interactive-bg-hover);
 }
+
+/* 隐藏设置面板内的辅助说明文字 */
+.dsh-appearance-section .dsh-appearance-switch-desc {
+  display: none !important;
+}
 .dsh-appearance-sidebar-offset {
   display: flex;
   align-items: center;
@@ -102,6 +107,12 @@ const APPEARANCE_CSS = `
   font-size: 12px;
   line-height: 16px;
   font-variant-numeric: tabular-nums;
+}
+
+.dsh-appearance-divider {
+  height: 1px;
+  background: var(--dsw-alias-border-l2);
+  margin: 0 -4px;
 }
 
 .dsh-appearance-switch-row {
@@ -155,17 +166,6 @@ const APPEARANCE_CSS = `
 .dsh-appearance-switch:focus-visible {
   outline: 2px solid var(--dsw-alias-brand-primary);
   outline-offset: 2px;
-}
-
-/* 弹窗层级修正：Modal 经 portal 挂到 body，root 容器（role="presentation"）z=1000，
-   但会话历史滑轨所处堆叠上下文的 root 级层级高于 1000，滑轨横线画在弹窗之上。
-   （遮罩本身不透明——会话文字被挡即为证；问题是层级而非透明度。）
-   将含 [role="dialog"] 的浮层容器提到 9999（app 顶层哨兵值）。
-   纯 CSS、同帧生效；弹窗关闭时容器随 portal 卸载，无恢复过程、零延迟；
-   不改遮罩背景，深浅主题均无黑遮罩副作用。选择器用稳定 aria 属性，
-   不依赖易碎的 CSS-Module 哈希 class。 */
-[role="presentation"]:has(> [role="dialog"]) {
-  z-index: 9999 !important;
 }
 
 .dsh-appearance-background {
@@ -285,6 +285,14 @@ const CONVERSATION_READABILITY_CSS = `
   text-align: center;
 }
 
+/* 抑制 DSH 核心 .md-table-wide:hover 的 padding-bottom 突变（8px→0），
+   该突变会压缩容器高度，导致表格底部边框（分割线）产生像素级上移。 */
+[class*="_tableScroll_"].md-table-wide:hover,
+[class*="_tableScroll_"].md-table-wide:focus-visible {
+  overflow-x: auto;
+  padding-bottom: var(--dsh-scrollbar-width, 8px) !important;
+}
+
 .md-code-block { border: 1px solid var(--dsw-alias-border-l2); }
 pre.shiki { transition: border-color .15s ease; }
 
@@ -321,16 +329,18 @@ pre.shiki { transition: border-color .15s ease; }
 `;
 
 export function setConversationReadability(enabled) {
-  const existing = document.querySelector(`style[data-plugin-css="${CONVERSATION_CSS_ID}"]`);
-  if (enabled && !existing) {
+  if (enabled && !conversationCssInjected) {
     const style = document.createElement('style');
     style.dataset.plugin = 'dsh-appearance';
     style.dataset.pluginCss = CONVERSATION_CSS_ID;
     style.textContent = CONVERSATION_READABILITY_CSS;
     document.head.appendChild(style);
+    conversationCssInjected = true;
     startTableObserver();
-  } else if (!enabled && existing) {
-    existing.remove();
+  } else if (!enabled && conversationCssInjected) {
+    conversationCssInjected = false;
+    const existing = document.querySelector(`style[data-plugin-css="${CONVERSATION_CSS_ID}"]`);
+    if (existing) existing.remove();
     stopTableObserver();
     document.querySelectorAll('[data-chat-flow-kind="assistant-step"] tbody td.dsh-tbl-center')
       .forEach((td) => td.classList.remove('dsh-tbl-center'));
@@ -345,13 +355,14 @@ export function setConversationReadability(enabled) {
 function isCenterableCell(td) {
   const text = (td.textContent || '').trim();
   if (!text) return false;
-  // 含多行 / 段落 → 视为长内容，左对齐
+  // 含换行 → 多行内容 → 左对齐
   if (text.includes('\n')) return false;
-  // 纯数字 / 货币 / 百分比 / 常见数值符号
-  if (/^[\d,.\-+/$¥€£%\s×÷:]+$/.test(text) && /\d/.test(text)) return true;
-  // 极短单字（≤4 字符、无空格）：标签 / 是否 / 代号
-  if (text.length <= 4 && !/\s/.test(text)) return true;
-  return false;
+  // 含句子标点（中英文逗号/句号/分号/冒号/顿号/问号/叹号） → 视为句子 → 左对齐
+  if (/[。，；：、！?,.]/.test(text)) return false;
+  // 纯数值（含千分位/小数/货币/单位/空格分隔） → 居中
+  if (/^[\d,.\-+/$¥€£%×÷:\s]+$/.test(text) && /\d/.test(text)) return true;
+  // 其余短词/词组（≤12 字符，无句子标点） → 标签 → 居中
+  return text.length <= 12;
 }
 
 function alignTableCells(root = document) {
@@ -365,6 +376,7 @@ function alignTableCells(root = document) {
 }
 
 let tableObserver = null;
+let conversationCssInjected = false;
 function startTableObserver() {
   if (tableObserver) return;
   alignTableCells();

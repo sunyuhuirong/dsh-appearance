@@ -1,8 +1,9 @@
 import { createThemeEngine } from './theme.js';
 import { installAppearanceCss } from './style.js';
 import { installRaiseOverlay } from './raise.js';
-import { installModalRaise } from './modalRaise.js';
 import { applySidebarOffset } from './sidebar-order.js';
+import { applyStableProjectFolderIcon } from './sidebar-folder-icon.js';
+import { applySidebarIconAlign } from './sidebar-icon-align.js';
 import { setConversationReadability } from './style.js';
 import { applyBackground } from './background.js';
 import { AppearanceSection } from './settings.jsx';
@@ -26,7 +27,6 @@ function apply(ctx) {
 
   installAppearanceCss();
   installRaiseOverlay();
-  installModalRaise();
 
   const scope = ctx.settingsScope.bind({ namespace: SETTINGS_NAMESPACE });
   const themeEngine = createThemeEngine(ctx, scope);
@@ -37,6 +37,8 @@ function apply(ctx) {
     themeEngine.apply();
     const cfg = scope.getSnapshot().value ?? {};
     applySidebarOffset(cfg);
+    applyStableProjectFolderIcon(cfg);
+    applySidebarIconAlign(cfg);
     applyBackground(cfg);
     setConversationReadability(!!cfg.conversationReadability);
     if (cfg.sidebarOrder || cfg.sidebarPositions) queueMicrotask(() => {
