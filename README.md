@@ -121,3 +121,7 @@ src/
 - 仅使用 CSS 注入 + 官方 slots，不修改主包源码
 - 不 hook / monkey-patch DSH 内部模块
 - 默认配置下零注入，无副作用
+
+## 许可
+
+MIT
