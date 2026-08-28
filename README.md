@@ -8,6 +8,8 @@ dsh plugin --profile web add dsh-appearance
 
 重启 `dsh web` 后在 **Settings → Appearance** 中配置。
 
+![设置面板](assets/screenshot.png)
+
 ---
 
 ## 功能
